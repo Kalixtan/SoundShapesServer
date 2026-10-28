@@ -21,7 +21,9 @@ public class Endpoints : EndpointGroup
     [GameEndpoint("~level:{args}")]
     public Response GetEndpoints(RequestContext context, IDataStore dataStore, GameDatabaseContext database, GameUser user, string args)
     {
-        string[] arguments = args.Split('.');
+        string[] arguments = args.Split('.', 2);
+        if (arguments.Length != 2 || arguments.Any(string.IsNullOrWhiteSpace))
+            return new Response(HttpStatusCode.NotFound);
 
         string levelId = arguments[0];
         string action = arguments[1];
@@ -41,12 +43,22 @@ public class Endpoints : EndpointGroup
     [GameEndpoint("~level:{args}", HttpMethods.Post)]
     public Response PostEndpoints(RequestContext context, IDataStore dataStore, ProfanityService profanity, Stream body, GameDatabaseContext database, GameServerConfig config, GameUser user, GameToken token, string args)
     {
-        string[] arguments = args.Split('.');
+        string[] arguments = args.Split('.', 2);
+        if (arguments.Length != 2 || arguments.Any(string.IsNullOrWhiteSpace))
+            return new Response(HttpStatusCode.NotFound);
 
         string levelId = arguments[0];
         string action = arguments[1];
 
-        MultipartFormDataParser? parser = MultipartFormDataParser.Parse(body);
+        MultipartFormDataParser parser;
+        try
+        {
+            parser = MultipartFormDataParser.Parse(body);
+        }
+        catch (Exception)
+        {
+            return new Response(HttpStatusCode.BadRequest);
+        }
 
         if (action == "create") return LevelManagementEndpoints.CreateLevel(context, config, dataStore, profanity, parser, database, user, token);
         

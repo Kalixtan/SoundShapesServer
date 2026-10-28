@@ -14,6 +14,21 @@ namespace SoundShapesServerTests.Tests;
 public class LevelTests: ServerTest
 {
     [Test]
+    public async Task MalformedGameLevelRoutesReturnClientErrors()
+    {
+        using TestContext context = GetServer();
+        GameUser user = context.CreateUser();
+        using HttpClient client = context.GetAuthenticatedClient(TokenType.GameAccess, user);
+
+        HttpResponseMessage response = await client.GetAsync("/otg/~level:missing-action");
+        Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.NotFound));
+
+        using StringContent body = new("not multipart");
+        response = await client.PostAsync("/otg/~level:*.create", body);
+        Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.BadRequest));
+    }
+
+    [Test]
     public Task LevelFilteringWorks()
     {
         using TestContext context = GetServer();
