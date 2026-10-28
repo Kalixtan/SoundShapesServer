@@ -83,7 +83,7 @@ public class LevelEndpoints : EndpointGroup
             }
         }
 
-        filters ??= context.GetFilters<LevelFilters>(database);
+        filters ??= context.GetFilters<LevelFilters>(database, "search");
         order ??= context.GetOrderType<LevelOrderType>() ?? LevelOrderType.CreationDate;
 
         PaginatedList<GameLevel> levels =

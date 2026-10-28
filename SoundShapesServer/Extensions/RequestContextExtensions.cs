@@ -22,14 +22,15 @@ public static class RequestContextExtensions
         return (from, count, descending);
     }
 
-    public static T GetFilters<T>(this RequestContext context, GameDatabaseContext database) where T : IFilters, new()
+    public static T GetFilters<T>(this RequestContext context, GameDatabaseContext database,
+        params string[] excludedParameters) where T : IFilters, new()
     {
         T instance = new();
 
         foreach (PropertyInfo property in typeof(T).GetProperties())
         {
             FilterPropertyAttribute? attribute = property.GetCustomAttribute<FilterPropertyAttribute>();
-            if (attribute == null) 
+            if (attribute == null || excludedParameters.Contains(attribute.ParameterName))
                 continue;
             
             string? strValue = context.QueryString[attribute.ParameterName];

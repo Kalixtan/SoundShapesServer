@@ -72,6 +72,9 @@ public class LevelTests: ServerTest
         JObject response = JObject.Parse(await client.GetStringAsync(payload));
         
         Assert.That(response.GetValue("items")?.ToArray().Length, Is.EqualTo(1), "Check if search filter works");
+
+        JObject all = JObject.Parse(await client.GetStringAsync("/otg/~index:level.page?search=all"));
+        Assert.That(all.GetValue("items")?.ToArray().Length, Is.EqualTo(2), "Search mode all includes both levels");
     }
 
     [Test]
