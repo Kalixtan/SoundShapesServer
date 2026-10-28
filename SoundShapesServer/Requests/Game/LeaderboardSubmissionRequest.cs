@@ -2,43 +2,50 @@ namespace SoundShapesServer.Requests.Game;
 
 public class LeaderboardSubmissionRequest
 {
-    public static LeaderboardSubmissionRequest DeSerializeSubmission(string str)
+    public static bool TryDeserializeSubmission(string str, out LeaderboardSubmissionRequest response)
     {
-        LeaderboardSubmissionRequest response = new();
+        response = new();
         
         string[] queries = str.Split("&");
 
         foreach (string? query in queries)
         {
             string[] nameAndValue = query.Split("=");
+            if (nameAndValue.Length < 2) return false;
             string name = nameAndValue[0];
             string value = nameAndValue[1];
 
             switch (name)
             {
                 case "deaths":
-                    response.Deaths = int.Parse(value);
+                    if (!int.TryParse(value, out int deaths)) return false;
+                    response.Deaths = deaths;
                     break;
                 case "playTime":
-                    response.PlayTime = long.Parse(value);
+                    if (!long.TryParse(value, out long playTime)) return false;
+                    response.PlayTime = playTime;
                     break;
                 case "golded":
-                    response.Golded = int.Parse(value);
+                    if (!int.TryParse(value, out int golded)) return false;
+                    response.Golded = golded;
                     break;
                 case "tokenCount":
-                    response.Notes = int.Parse(value);
+                    if (!int.TryParse(value, out int notes)) return false;
+                    response.Notes = notes;
                     break;
                 case "score":
-                    response.Score = long.Parse(value);
+                    if (!long.TryParse(value, out long score)) return false;
+                    response.Score = score;
                     break;
                 case "completed":
-                    response.Completed = int.Parse(value) == 1;
+                    if (!int.TryParse(value, out int completed)) return false;
+                    response.Completed = completed == 1;
                     break;
             }
             
         }
 
-        return response;
+        return true;
     }
     public int Deaths { get; set; }
     public long PlayTime { get; set; }

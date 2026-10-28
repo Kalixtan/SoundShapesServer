@@ -41,6 +41,25 @@ public class LevelTests: ServerTest
     }
 
     [Test]
+    public async Task MalformedRecordDoesNotCreatePlay()
+    {
+        using TestContext context = GetServer();
+        GameUser user = context.CreateUser();
+        GameLevel level = context.CreateLevel(user);
+        context.Database.Refresh();
+        using HttpClient client = context.GetAuthenticatedClient(TokenType.GameAccess, user);
+        foreach (string body in new[] { "score", "score=not-a-number", "deaths=99999999999999999999" })
+        {
+            using StringContent content = new(body);
+            HttpResponseMessage response = await client.PostAsync(
+                $"/otg/~identity:{user.Id}/~record:%2F~level%3A{level.Id}.post", content);
+            Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.BadRequest), body);
+        }
+        context.Database.Refresh();
+        Assert.That(level.PlaysCount, Is.Zero);
+    }
+
+    [Test]
     public Task LevelFilteringWorks()
     {
         using TestContext context = GetServer();

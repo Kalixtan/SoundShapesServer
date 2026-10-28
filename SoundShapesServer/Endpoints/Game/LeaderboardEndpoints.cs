@@ -38,7 +38,8 @@ public class LeaderboardEndpoints : EndpointGroup
         if (!level.HasUserAccess(user))
             return HttpStatusCode.NotFound;
 
-        LeaderboardSubmissionRequest deSerializedRequest = LeaderboardSubmissionRequest.DeSerializeSubmission(body);
+        if (!LeaderboardSubmissionRequest.TryDeserializeSubmission(body, out LeaderboardSubmissionRequest deSerializedRequest))
+            return HttpStatusCode.BadRequest;
 
         if (deSerializedRequest.Completed)
             database.AddCompletionToLevel(user, level);
