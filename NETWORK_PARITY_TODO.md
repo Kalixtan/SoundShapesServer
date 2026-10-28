@@ -27,6 +27,9 @@ retail observations as the authority; record server-only assumptions.
       conclusions from that status.
 - [ ] Level metadata get and put requests with a placeholder level return 404;
       test with a real level and compare the body and status to retail evidence.
+- [ ] A seeded public fixture level can be liked and unliked, but does not
+      appear in `search=all`; identify the server's index filters and fixture
+      requirements before treating this as a server parity failure.
 
 ## Retail contract matrix
 
