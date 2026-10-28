@@ -26,6 +26,18 @@ public class LevelTests: ServerTest
         using StringContent body = new("not multipart");
         response = await client.PostAsync("/otg/~level:*.create", body);
         Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.BadRequest));
+
+        foreach (string path in new[] {
+            $"/otg/~identity:{user.Id}/~follow:%2F~identity%3Amissing",
+            $"/otg/~identity:{user.Id}/~like:%2F~level%3Amissing",
+            $"/otg/~identity:{user.Id}/~queued:%2F~level%3Amissing" })
+        {
+            response = await client.GetAsync(path);
+            Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.NotFound), path);
+        }
+        using StringContent recordBody = new("score=1");
+        response = await client.PostAsync($"/otg/~identity:{user.Id}/~record:%2F~level%3Amissing", recordBody);
+        Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.NotFound));
     }
 
     [Test]

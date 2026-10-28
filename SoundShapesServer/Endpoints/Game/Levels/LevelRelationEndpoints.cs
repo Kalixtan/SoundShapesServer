@@ -5,6 +5,7 @@ using Bunkum.Core.Responses;
 using Bunkum.Listener.Protocol;
 using SoundShapesServer.Database;
 using SoundShapesServer.Extensions;
+using SoundShapesServer.Helpers;
 using SoundShapesServer.Responses.Game;
 using SoundShapesServer.Responses.Game.Levels;
 using SoundShapesServer.Types;
@@ -60,10 +61,8 @@ public class LevelRelationEndpoints : EndpointGroup
     public Response LevelLikeRequests(RequestContext context, GameDatabaseContext database, GameUser user,
         GameToken token, string userId, string arguments)
     {
-        // This is to separate the .put / .get / delete from the id, which Bunkum currently cannot do by it self
-        string[] argumentArray = arguments.Split(".");
-        string levelId = argumentArray[0];
-        string requestType = argumentArray[1];
+        if (!GameActionHelper.TrySplit(arguments, out string levelId, out string requestType))
+            return new Response(HttpStatusCode.NotFound);
 
         GameLevel? level = database.GetLevelWithId(levelId);
         if (level == null)
@@ -80,10 +79,8 @@ public class LevelRelationEndpoints : EndpointGroup
     public Response LevelQueueRequests(RequestContext context, GameDatabaseContext database, GameUser user,
         string arguments)
     {
-        // This is to separate the .put / .get / delete from the id, which Bunkum currently cannot do by it self
-        string[] argumentArray = arguments.Split(".");
-        string levelId = argumentArray[0];
-        string requestType = argumentArray[1];
+        if (!GameActionHelper.TrySplit(arguments, out string levelId, out string requestType))
+            return new Response(HttpStatusCode.NotFound);
 
         GameLevel? level = database.GetLevelWithId(levelId);
         if (level == null)

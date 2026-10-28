@@ -5,6 +5,7 @@ using Bunkum.Core.Responses;
 using Bunkum.Protocols.Http;
 using SoundShapesServer.Database;
 using SoundShapesServer.Extensions;
+using SoundShapesServer.Helpers;
 using SoundShapesServer.Requests.Game;
 using SoundShapesServer.Responses.Game;
 using SoundShapesServer.Types;
@@ -24,9 +25,8 @@ public class LeaderboardEndpoints : EndpointGroup
     {
         if (arguments != null)
         {
-            string[] args = arguments.Split('.');
-            levelId = args[0];
-            string requestType = args[1];
+            if (!GameActionHelper.TrySplit(arguments, out levelId, out string requestType))
+                return HttpStatusCode.NotFound;
 
             if (requestType != "post") return HttpStatusCode.NotFound;
         }
