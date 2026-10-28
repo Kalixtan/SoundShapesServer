@@ -8,6 +8,7 @@ public static class GameLevelExtensions
 {
     public static bool HasUserAccess(this GameLevel level, GameUser? accessor)
     {
-        return !(level.Visibility == LevelVisibility.Private && level.Author.Id != accessor?.Id && accessor?.PermissionsType < PermissionsType.Moderator);
+        return level.Visibility != LevelVisibility.Private ||
+               (accessor != null && (level.Author.Id == accessor.Id || accessor.PermissionsType >= PermissionsType.Moderator));
     }
 }

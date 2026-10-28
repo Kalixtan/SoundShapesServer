@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Newtonsoft.Json.Linq;
 using SoundShapesServer.Requests.Api;
+using SoundShapesServer.Extensions;
 using SoundShapesServer.Responses.Api.Framework;
 using SoundShapesServer.Responses.Api.Responses.Levels;
 using SoundShapesServer.Types;
@@ -13,6 +14,26 @@ namespace SoundShapesServerTests.Tests;
 
 public class LevelTests: ServerTest
 {
+    [Test]
+    public void PrivateLevelAccessRequiresOwnerOrModerator()
+    {
+        using TestContext context = GetServer();
+        GameUser owner = context.CreateUser("private-owner");
+        GameUser stranger = context.CreateUser("private-stranger");
+        GameUser moderator = context.CreateUser("private-moderator");
+        context.Database.SetUserPermissions(moderator, PermissionsType.Moderator);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        GameLevel level = new() { Id = "private-probe", Author = owner, Name = "Private",
+            CreationDate = now, ModificationDate = now, Visibility = LevelVisibility.Private,
+            UploadPlatform = PlatformType.Unknown };
+        context.Database.AddLevel(level, true);
+
+        Assert.That(level.HasUserAccess(null), Is.False);
+        Assert.That(level.HasUserAccess(stranger), Is.False);
+        Assert.That(level.HasUserAccess(owner), Is.True);
+        Assert.That(level.HasUserAccess(moderator), Is.True);
+    }
+
     [Test]
     public async Task MalformedGameLevelRoutesReturnClientErrors()
     {
