@@ -35,6 +35,34 @@ public class LevelTests: ServerTest
     }
 
     [Test]
+    public async Task PrivateLevelEndpointsCheckAccess()
+    {
+        using TestContext context = GetServer();
+        GameUser owner = context.CreateUser("endpoint-owner");
+        GameUser stranger = context.CreateUser("endpoint-stranger");
+        GameUser moderator = context.CreateUser("endpoint-moderator");
+        context.Database.SetUserPermissions(moderator, PermissionsType.Moderator);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        GameLevel level = new() { Id = "private-endpoint", Author = owner, Name = "Private",
+            CreationDate = now, ModificationDate = now, Visibility = LevelVisibility.Private,
+            UploadPlatform = PlatformType.Unknown };
+        context.Database.AddLevel(level, true);
+        string upload = $"/otg/~level:{level.Id}/~upload:{now.ToUnixTimeMilliseconds()}.get";
+        string latest = $"/otg/~level:{level.Id}.latest";
+        using HttpClient ownerClient = context.GetAuthenticatedClient(TokenType.GameAccess, owner);
+        using HttpClient strangerClient = context.GetAuthenticatedClient(TokenType.GameAccess, stranger);
+        using HttpClient moderatorClient = context.GetAuthenticatedClient(TokenType.GameAccess, moderator);
+
+        Assert.That((await context.Http.GetAsync(upload)).StatusCode, Is.EqualTo(System.Net.HttpStatusCode.NotFound));
+        foreach (string path in new[] { upload, latest })
+        {
+            Assert.That((await strangerClient.GetAsync(path)).StatusCode, Is.EqualTo(System.Net.HttpStatusCode.NotFound), path);
+            Assert.That((await ownerClient.GetAsync(path)).StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK), path);
+            Assert.That((await moderatorClient.GetAsync(path)).StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK), path);
+        }
+    }
+
+    [Test]
     public async Task MalformedGameLevelRoutesReturnClientErrors()
     {
         using TestContext context = GetServer();

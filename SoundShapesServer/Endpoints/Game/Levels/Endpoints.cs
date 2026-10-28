@@ -56,7 +56,7 @@ public class Endpoints : EndpointGroup
         return action switch
         {
             "delete" => LevelManagementEndpoints.RemoveLevel(dataStore, database, user, level),
-            "latest" => new Response(new LevelResponse(level, user), ContentType.Json),
+            "latest" when level.HasUserAccess(user) => new Response(new LevelResponse(level, user), ContentType.Json),
             _ => new Response(HttpStatusCode.NotFound)
         };
     }
