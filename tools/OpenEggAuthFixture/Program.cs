@@ -10,6 +10,7 @@ var provider = new GameDatabaseProvider();
 provider.Initialize();
 using var database = provider.GetContext();
 var user = database.CreateUser("openegg_probe");
+var target = database.CreateUser("openegg_probe_target");
 var token = database.CreateToken(user, TokenType.GameAccess,
     TokenAuthenticationType.None, 3600, PlatformType.Ps3, null);
-Console.WriteLine($"FIXTURE {user.Id} {token.Id}");
+Console.WriteLine($"FIXTURE {user.Id} {token.Id} {target.Id}");
