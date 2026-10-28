@@ -27,6 +27,8 @@ retail observations as the authority; record server-only assumptions.
       conclusions from that status.
 - [ ] Level metadata get and put requests with a placeholder level return 404;
       test with a real level and compare the body and status to retail evidence.
+- [ ] The traced `~level:<id>/~version:*.get` request returns 404 for a real
+      fixture level; determine the retail response before adding server support.
 - [x] Correct `search=all` being treated as a literal name filter on the game
       index; verify the separate text-search query still works.
 
