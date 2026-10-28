@@ -24,6 +24,8 @@ retail observations as the authority; record server-only assumptions.
 - [ ] The featured-level probe uses a nonexistent placeholder identity and
       returns 404; confirm handler routing with a real test user before drawing
       conclusions from that status.
+- [ ] Level metadata get and put requests with a placeholder level return 404;
+      test with a real level and compare the body and status to retail evidence.
 
 ## Retail contract matrix
 
