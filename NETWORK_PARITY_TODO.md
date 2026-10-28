@@ -14,6 +14,8 @@ retail observations as the authority; record server-only assumptions.
 - [x] The same route with `search=all` and no session returns HTTP 403.
 - [x] Album, following, followers, and activity page URLs reach protected
       handlers and return HTTP 403 without a session.
+- [x] Following get/put/delete request suffixes reach the relationship handler
+      and return HTTP 403 without a session.
 - [x] `POST /otg/identity/login/token/psn.post` with an invalid ticket reaches
       the login handler and returns HTTP 400.
 - [ ] No authenticated OpenEgg request has been verified yet.
