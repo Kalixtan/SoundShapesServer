@@ -16,6 +16,8 @@ retail observations as the authority; record server-only assumptions.
       handlers and return HTTP 403 without a session.
 - [x] Following get/put/delete request suffixes reach the relationship handler
       and return HTTP 403 without a session.
+- [x] Queued page/get/put/delete request suffixes reach the level relation
+      handler and return HTTP 403 without a session.
 - [x] `POST /otg/identity/login/token/psn.post` with an invalid ticket reaches
       the login handler and returns HTTP 400.
 - [ ] No authenticated OpenEgg request has been verified yet.
@@ -52,6 +54,9 @@ retail observations as the authority; record server-only assumptions.
 - [ ] Check all registered game endpoints against the 69 Watermelon wrappers:
       levels, discovery, metadata, relations, records, leaderboards, activity,
       albums, identity, EULA, grief reports, and cloud saves.
+- [ ] Resolve the queued-item `put` policy: the replacement server currently
+      returns 404 by design, while retail traces prove that OpenEgg constructs
+      and enqueues this request. Server-side acceptance remains unverified.
 - [ ] Check expected behavior for the 45 PSN/Store/Near `Network_*` APIs and
       13 `OnlineCoordinator_*` APIs; document service features the backend
       cannot represent.
