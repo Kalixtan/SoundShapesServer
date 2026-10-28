@@ -8,6 +8,7 @@ using Bunkum.Protocols.Http;
 using HttpMultipartParser;
 using SoundShapesServer.Configuration;
 using SoundShapesServer.Database;
+using SoundShapesServer.Extensions;
 using SoundShapesServer.Responses.Game.Levels;
 using SoundShapesServer.Services;
 using SoundShapesServer.Types.Authentication;
@@ -18,6 +19,26 @@ namespace SoundShapesServer.Endpoints.Game.Levels;
 
 public class Endpoints : EndpointGroup
 {
+    // The database currently retains only the original upload, not upload history.
+    [GameEndpoint("~level:{levelId}/~upload:{arguments}")]
+    [Authentication(false)]
+    public Response GetUpload(RequestContext context, GameDatabaseContext database, GameUser? user, string levelId, string arguments)
+    {
+        const string suffix = ".get";
+        if (!arguments.EndsWith(suffix, StringComparison.Ordinal) ||
+            !long.TryParse(arguments[..^suffix.Length], out long uploadId))
+            return new Response(HttpStatusCode.NotFound);
+
+        GameLevel? level = database.GetLevelWithId(levelId);
+        if (level == null || !level.HasUserAccess(user) ||
+            level.CreationDate.ToUnixTimeMilliseconds() != uploadId)
+            return new Response(HttpStatusCode.NotFound);
+
+        // Publish and upload records share an identifier; the exact retail
+        // response fields still need confirmation.
+        return new Response(new LevelPublishResponse(level), ContentType.Json);
+    }
+
     [GameEndpoint("~level:{args}")]
     public Response GetEndpoints(RequestContext context, IDataStore dataStore, GameDatabaseContext database, GameUser user, string args)
     {

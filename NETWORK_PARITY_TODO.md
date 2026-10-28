@@ -29,6 +29,11 @@ retail observations as the authority; record server-only assumptions.
       test with a real level and compare the body and status to retail evidence.
 - [ ] The traced `~level:<id>/~version:*.get` request returns 404 for a real
       fixture level; determine the retail response before adding server support.
+- [x] Publish a level and fetch its `~upload:<id>.get` through OpenEgg; reject
+      missing levels, malformed IDs and unknown upload IDs.
+- [ ] Verify upload response fields and access policy against retail. The
+      replacement returns its existing publish response and retains only one
+      upload per level; historical upload lookup is unsupported.
 - [x] Correct `search=all` being treated as a literal name filter on the game
       index; verify the separate text-search query still works.
 
