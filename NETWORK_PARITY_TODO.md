@@ -20,7 +20,8 @@ retail observations as the authority; record server-only assumptions.
       handler and return HTTP 403 without a session.
 - [x] `POST /otg/identity/login/token/psn.post` with an invalid ticket reaches
       the login handler and returns HTTP 400.
-- [ ] No authenticated OpenEgg request has been verified yet.
+- [x] An authenticated OpenEgg index request succeeds with a locally seeded
+      test session; this does not exercise retail ticket login.
 - [ ] The featured-level probe uses a nonexistent placeholder identity and
       returns 404; confirm handler routing with a real test user before drawing
       conclusions from that status.
