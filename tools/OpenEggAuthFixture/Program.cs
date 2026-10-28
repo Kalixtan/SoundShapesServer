@@ -22,4 +22,6 @@ var level = new GameLevel {
 database.AddLevel(level, true);
 var token = database.CreateToken(user, TokenType.GameAccess,
     TokenAuthenticationType.None, 3600, PlatformType.Ps3, null);
-Console.WriteLine($"FIXTURE {user.Id} {token.Id} {target.Id} {level.Id}");
+var ownerToken = database.CreateToken(target, TokenType.GameAccess,
+    TokenAuthenticationType.None, 3600, PlatformType.Ps3, null);
+Console.WriteLine($"FIXTURE {user.Id} {token.Id} {target.Id} {level.Id} {ownerToken.Id}");
